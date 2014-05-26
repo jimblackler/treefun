@@ -17,14 +17,16 @@ function buildNextLevel(groups) {
 
 function makeLevels(tree) {
   var levels = [];
-  var groups = [
-    [tree]
-  ];
+  var groups = [];
+  for (var idx = 0; idx != tree.children.length; idx++) {
+    groups.push([tree.children[idx]]);
+  }
   while (true) {
+    levels.push(groups);
     groups = buildNextLevel(groups);
     if (groups.length == 0)
       break;
-    levels.push(groups);
+
   }
   return levels;
 }
@@ -37,24 +39,29 @@ function treeToDiagram(tree, diagram) {
   var levelsGapRatio = 1.4;
 
   // Find which level should be fixed.
-  var longestWidth = - 1;
-  var fixedLevel = - 1;
+  var fixedLevel = -1;
+  var spacings = [];
+  var widths = [];
+
   for (var levelIdx = 0; levelIdx != levels.length; levelIdx++) {
 
     var level = levels[levelIdx];
-    var width = 0;
+    var spacing = 0;
+    var nodesWidth = 0;
     var groupSpacing = 0;
     for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
-      width += groupSpacing;
+      spacing += groupSpacing;
       var group = level[memberIdx];
-      width += group.length;
-      width += (group.length - 1) * nodeGapRatio;
+      nodesWidth += group.length;
+      spacing += (group.length - 1) * nodeGapRatio;
       groupSpacing = groupGapRatio;
     }
-    if (width > longestWidth) {
-      longestWidth = width;
+    var width = spacing + nodesWidth;
+    if (fixedLevel == -1 || width > widths[fixedLevel]) {
       fixedLevel = levelIdx;
     }
+    widths.push(width);
+    spacings.push(spacing);
   }
 
 
@@ -63,6 +70,13 @@ function treeToDiagram(tree, diagram) {
     var level = levels[levelIdx];
     var y = levelIdx * (1 + levelsGapRatio);
     var x = 0;
+    var useGroupGapRatio = groupGapRatio;
+    if (levelIdx != fixedLevel) {
+      var spare = widths[fixedLevel] - widths[levelIdx];
+      var extra = spare / (level.length + 1);
+      useGroupGapRatio += extra;
+      x += extra;
+    }
     for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
       var group = level[memberIdx];
       var nodeSpacing = 0;
@@ -74,7 +88,7 @@ function treeToDiagram(tree, diagram) {
         x += 1;
         nodeSpacing = nodeGapRatio;
       }
-      x += groupGapRatio;
+      x += useGroupGapRatio;
     }
   }
 
@@ -86,7 +100,7 @@ function treeToDiagram(tree, diagram) {
   var diagramWidth = Number.parseInt(style.width);
   var diagramHeight = Number.parseInt(style.height);
 
-  var xMultiplier = diagramWidth / longestWidth;
+  var xMultiplier = diagramWidth / widths[fixedLevel];
   var yMultiplier = diagramHeight / height;
 
 
@@ -109,7 +123,7 @@ function treeToDiagram(tree, diagram) {
           var parent = node.parent;
           var parentOffset = (nodeIdx + 1) / (group.length + 1);
           var line = document.createElementNS(svgns, "line");
-          line.setAttribute("x1", Math.floor((node.x +.5) * xMultiplier) + "px");
+          line.setAttribute("x1", Math.floor((node.x + .5) * xMultiplier) + "px");
           line.setAttribute("y1", Math.floor(node.y * yMultiplier) + "px");
           line.setAttribute("x2", Math.floor((parent.x + parentOffset) * xMultiplier) + "px");
           line.setAttribute("y2", Math.floor((parent.y + 1) * yMultiplier) + "px");
