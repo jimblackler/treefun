@@ -1,5 +1,7 @@
 "use strict";
 
+var random = Alea(2);
+
 var max = 100;
 var use = 40;
 
@@ -7,7 +9,8 @@ var data = [];
 for (var i = 0; i != max; i++) {
   data.push(i);
 }
-shuffle(data);
+
+shuffle(data, random);
 
 data = data.slice(0, use);
 
@@ -35,25 +38,10 @@ for (i = 1; i != use; i++) {
   }
 }
 
-function makeTree(node, element) {
-  element.appendChild(document.createTextNode("" + node.value));
-  if (!node.left && !node.right)
-    return;
-  var list = document.createElement("ol");
-  if (node.left) {
-    var li = document.createElement("li");
-    makeTree(node.left, li);
-    list.appendChild(li);
-  }
-  if (node.right) {
-    li = document.createElement("li");
-    makeTree(node.right, li);
-    list.appendChild(li);
-  }
-  element.appendChild(list);
-}
 
-makeTree(root, treehere);
+makeList(root, treehere);
 
+var tree = listToTree(list, null);
+  treeToDiagram(tree, diagramhere);
 
 
