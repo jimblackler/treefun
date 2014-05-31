@@ -65,7 +65,7 @@ function treeToDiagram(tree, diagram) {
   }
 
 
-  // Position
+  // Position and make elements
   for (var levelIdx = 0; levelIdx != levels.length; levelIdx++) {
     var level = levels[levelIdx];
     var y = levelIdx * (1 + levelsGapRatio);
@@ -77,12 +77,19 @@ function treeToDiagram(tree, diagram) {
       useGroupGapRatio += extra;
       x += extra;
     }
+    var namespace = "http://www.w3.org/2000/svg";
     for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
       var group = level[memberIdx];
       var nodeSpacing = 0;
       for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
         x += nodeSpacing;
         var node = group[nodeIdx];
+        node.rect = document.createElementNS(namespace, "rect");
+        diagram.appendChild(node.rect);
+        if (levelIdx > 0) {
+          node.line = document.createElementNS(namespace, "line");
+          diagram.appendChild(node.line);
+        }
         node.x = x;
         node.y = y;
         x += 1;
@@ -104,34 +111,96 @@ function treeToDiagram(tree, diagram) {
   var yMultiplier = diagramHeight / height;
 
 
-  var svgns = "http://www.w3.org/2000/svg";
 
-  // Render
-  for (var levelIdx = 0; levelIdx != levels.length; levelIdx++) {
-    var level = levels[levelIdx];
-    for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
-      var group = level[memberIdx];
-      for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
-        var node = group[nodeIdx];
-        var rect = document.createElementNS(svgns, "rect");
-        rect.setAttribute("x", Math.floor(node.x * xMultiplier) + "px");
-        rect.setAttribute("y", Math.floor(node.y * yMultiplier) + "px");
-        rect.setAttribute("width", Math.floor(xMultiplier) + "px");
-        rect.setAttribute("height", Math.floor(yMultiplier) + "px");
-        diagram.appendChild(rect);
-        if (levelIdx > 0) {
-          var parent = node.parent;
-          var parentOffset = (nodeIdx + 1) / (group.length + 1);
-          var line = document.createElementNS(svgns, "line");
-          line.setAttribute("x1", Math.floor((node.x + .5) * xMultiplier) + "px");
-          line.setAttribute("y1", Math.floor(node.y * yMultiplier) + "px");
-          line.setAttribute("x2", Math.floor((parent.x + parentOffset) * xMultiplier) + "px");
-          line.setAttribute("y2", Math.floor((parent.y + 1) * yMultiplier) + "px");
-          diagram.appendChild(line);
+  function simulate() {
+    for (var levelIdx = fixedLevel - 1; levelIdx >= 0; levelIdx--) {
+      var level = levels[levelIdx];
+      // Find positions
+      for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
+        var group = level[memberIdx];
+        for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
+          var node = group[nodeIdx];
+          if (node.children.length == 0)
+            continue;
+          var totalX = 0;
+          for (var childIdx = 0; childIdx != node.children.length; childIdx++) {
+            var child = node.children[childIdx];
+            totalX += child.x;
+          }
+          node.x = totalX / node.children.length;
+        }
+      }
+      // Sweep left to right
+      var minX = 0;
+      for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
+        var group = level[memberIdx];
+        for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
+          var node = group[nodeIdx];
+          if (node.x < minX) {
+            node.x = minX;
+          }
+          if (nodeIdx == group.length - 1)
+            minX = node.x + 1 + groupGapRatio;
+          else
+            minX = node.x + 1 + nodeGapRatio;
+        }
+      }
+
+      // Sweep right to right
+      var maxX = widths[fixedLevel] - 1;
+      for (var memberIdx = level.length - 1; memberIdx >= 0; memberIdx--) {
+        var group = level[memberIdx];
+        for (var nodeIdx = group.length - 1; nodeIdx >= 0; nodeIdx--) {
+          var node = group[nodeIdx];
+          if (node.x > maxX) {
+            node.x = maxX;
+          }
+          if (nodeIdx == group.length - 1)
+            maxX = node.x - 1 - groupGapRatio;
+          else
+            maxX = node.x - 1 - nodeGapRatio;
         }
       }
     }
+
+
+
   }
 
+  function render() {
+
+    for (var levelIdx = 0; levelIdx != levels.length; levelIdx++) {
+      var level = levels[levelIdx];
+      for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
+        var group = level[memberIdx];
+        for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
+          var node = group[nodeIdx];
+          var rect = node.rect;
+          rect.setAttribute("x", Math.floor(node.x * xMultiplier) + "px");
+          rect.setAttribute("y", Math.floor(node.y * yMultiplier) + "px");
+          rect.setAttribute("width", Math.floor(xMultiplier) + "px");
+          rect.setAttribute("height", Math.floor(yMultiplier) + "px");
+          if (levelIdx > 0) {
+            var parent = node.parent;
+            var parentOffset = (nodeIdx + 1) / (group.length + 1);
+            var line = node.line;
+            line.setAttribute("x1",
+                Math.floor((node.x + .5) * xMultiplier) + "px");
+            line.setAttribute("y1", Math.floor(node.y * yMultiplier) + "px");
+            line.setAttribute("x2",
+                Math.floor((parent.x + parentOffset) * xMultiplier) + "px");
+            line.setAttribute("y2",
+                Math.floor((parent.y + 1) * yMultiplier) + "px");
+          }
+        }
+      }
+    }
+    setTimeout(function () {
+      simulate();
+      render();
+    }, 1000);
+  }
+
+  render();
 
 }
