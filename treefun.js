@@ -41,7 +41,7 @@ for (i = 1; i != use; i++) {
 
 makeList(root, treehere);
 
-var tree = listToTree(list, null);
-  treeToDiagram(tree, diagramhere);
+var tree = listToTree(treehere, null);
+treeToDiagram(tree, diagramhere);
 
 

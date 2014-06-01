@@ -17,10 +17,10 @@ function buildNextLevel(groups) {
 
 function makeLevels(tree) {
   var levels = [];
-  var groups = [];
-  for (var idx = 0; idx != tree.children.length; idx++) {
-    groups.push([tree.children[idx]]);
-  }
+  var groups = [[tree]];
+//  for (var idx = 0; idx != tree.children.length; idx++) {
+//    groups.push([tree.children[idx]]);
+//  }
   while (true) {
     levels.push(groups);
     groups = buildNextLevel(groups);
@@ -34,9 +34,9 @@ function makeLevels(tree) {
 function treeToDiagram(tree, diagram) {
   var levels = makeLevels(tree);
 
-  var groupGapRatio = 0.8;
-  var nodeGapRatio = .33;
-  var levelsGapRatio = 1.4;
+  var groupGapRatio = 0.6;
+  var nodeGapRatio = .15;
+  var levelsGapRatio = 1.8;
 
   // Find which level should be fixed.
   var fixedLevel = -1;
@@ -110,9 +110,52 @@ function treeToDiagram(tree, diagram) {
   var xMultiplier = diagramWidth / widths[fixedLevel];
   var yMultiplier = diagramHeight / height;
 
+  function sweepLeftToRight(level, infield, outfield) {
+    var minX = 0;
+    for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
+      var group = level[memberIdx];
+      for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
+        var node = group[nodeIdx];
+        var newX;
+        if (node[infield] < minX) {
+          newX = minX;
+        } else {
+          newX = node[infield];
+        }
+        if (nodeIdx == group.length - 1)
+          minX = newX + 1 + groupGapRatio;
+        else
+          minX = newX + 1 + nodeGapRatio;
+        node[outfield] = newX;
+      }
+    }
+  }
 
+
+  function sweepRightToLeft(level, infield, outfield) {
+    var maxX = widths[fixedLevel] - 1;
+    for (var memberIdx = level.length - 1; memberIdx >= 0; memberIdx--) {
+      var group = level[memberIdx];
+      for (var nodeIdx = group.length - 1; nodeIdx >= 0; nodeIdx--) {
+        var node = group[nodeIdx];
+        var newX;
+        if (node[infield] > maxX) {
+          newX = maxX;
+        } else {
+          newX = node[infield];
+        }
+        if (nodeIdx == 0)
+          maxX = newX - 1 - groupGapRatio;
+        else
+          maxX = newX - 1 - nodeGapRatio;
+        node[outfield] = newX;
+      }
+    }
+  }
 
   function simulate() {
+
+    // Fixed to top, parent to average of children.
     for (var levelIdx = fixedLevel - 1; levelIdx >= 0; levelIdx--) {
       var level = levels[levelIdx];
       // Find positions
@@ -130,35 +173,45 @@ function treeToDiagram(tree, diagram) {
           node.x = totalX / node.children.length;
         }
       }
-      // Sweep left to right
-      var minX = 0;
+      sweepLeftToRight(level, "x", "x0");
+      sweepRightToLeft(level, "x0", "x0");
+      sweepRightToLeft(level, "x", "x1");
+      sweepLeftToRight(level, "x1", "x1");
       for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
         var group = level[memberIdx];
         for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
           var node = group[nodeIdx];
-          if (node.x < minX) {
-            node.x = minX;
-          }
-          if (nodeIdx == group.length - 1)
-            minX = node.x + 1 + groupGapRatio;
-          else
-            minX = node.x + 1 + nodeGapRatio;
+          node.x = (node.x0 + node.x1) / 2;
         }
       }
+    }
 
-      // Sweep right to right
-      var maxX = widths[fixedLevel] - 1;
-      for (var memberIdx = level.length - 1; memberIdx >= 0; memberIdx--) {
+    // Second level to bottom, children distributed under parent
+    for (var levelIdx = fixedLevel + 1; levelIdx < levels.length; levelIdx++) {
+      var level = levels[levelIdx];
+      // Find positions
+      for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
         var group = level[memberIdx];
-        for (var nodeIdx = group.length - 1; nodeIdx >= 0; nodeIdx--) {
+        var parent = group[0].parent;
+
+        var useNodeGapRatio = nodeGapRatio * 3;
+        var groupWidth = (group.length - 1) * (1 + useNodeGapRatio);
+        var x = parent.x - groupWidth / 2;
+        for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
           var node = group[nodeIdx];
-          if (node.x > maxX) {
-            node.x = maxX;
-          }
-          if (nodeIdx == group.length - 1)
-            maxX = node.x - 1 - groupGapRatio;
-          else
-            maxX = node.x - 1 - nodeGapRatio;
+          node.x = x;
+          x += 1 + useNodeGapRatio;
+        }
+      }
+      sweepLeftToRight(level, "x", "x0");
+      sweepRightToLeft(level, "x0", "x0");
+      sweepRightToLeft(level, "x", "x1");
+      sweepLeftToRight(level, "x1", "x1");
+      for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
+        var group = level[memberIdx];
+        for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
+          var node = group[nodeIdx];
+          node.x = (node.x0 + node.x1) / 2;
         }
       }
     }
@@ -195,12 +248,10 @@ function treeToDiagram(tree, diagram) {
         }
       }
     }
-    setTimeout(function () {
-      simulate();
-      render();
-    }, 1000);
   }
-
+  for (var iteration = 0; iteration != 1; iteration++) {
+    simulate();
+  }
   render();
 
 }
