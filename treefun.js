@@ -2,8 +2,8 @@
 
 var random = Alea(2);
 
-var max = 100;
-var use = 40;
+var max = 500;
+var use = 100;
 
 var data = [];
 for (var i = 0; i != max; i++) {

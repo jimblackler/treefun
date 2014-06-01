@@ -1,9 +1,9 @@
 "use strict";
 
-var random = Alea(8);
+var random = Alea(16);
 
 var max = 500;
-var use = 200;
+var use = 60;
 
 var data = [];
 for (var i = 0; i != max; i++) {
