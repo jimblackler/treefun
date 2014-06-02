@@ -32,8 +32,8 @@ function makeLevels(tree) {
 function treeToDiagram(tree, diagram) {
   var levels = makeLevels(tree);
 
-  var groupGapRatio = 0.6;
-  var nodeGapRatio = .08;
+  var groupGapRatio = 0.35;
+  var nodeGapRatio = 0.10;
   var levelsGapRatio = 1.8;
 
   // Find which level should be fixed.

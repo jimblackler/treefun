@@ -1,6 +1,6 @@
 "use strict";
 
-var random = Alea(16);
+var random = Alea(18);
 
 var max = 500;
 var use = 60;
