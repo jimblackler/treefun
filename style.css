@@ -1,12 +1,38 @@
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+div#content {
+    flex-basis: auto;
+    display : flex;
+}
+
+div#treehere {
+    overflow: auto;
+    height:768px;
+}
+
+svg#diagramhere {
+    flex: 2;
+}
+
+text {
+    text-anchor: middle;
+    font-size: small;
+    font-weight: bold;
+}
 
 line {
     fill: lightblue;
     stroke: black;
+    opacity: 0.5;
     stroke-width: 1;
 }
 
 rect {
     fill: lightblue;
     stroke: black;
+    opacity: 0.5;
     stroke-width: 1;
 }

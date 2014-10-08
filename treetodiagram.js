@@ -33,8 +33,8 @@ function treeToDiagram(tree, diagram) {
   var levels = makeLevels(tree);
 
   var groupGapRatio = 0.35;
-  var nodeGapRatio = 0.10;
-  var levelsGapRatio = 1.8;
+  var nodeGapRatio = 0.11;
+  var levelsGapRatio = 1.2;
 
   // Find which level should be fixed.
   var fixedLevel = -1;
@@ -142,19 +142,19 @@ function treeToDiagram(tree, diagram) {
     }
   }
 
-function sweepAndAverage() {
-  sweepLeftToRight(level, "x", "x0");
-  sweepRightToLeft(level, "x0", "x0");
-  sweepRightToLeft(level, "x", "x1");
-  sweepLeftToRight(level, "x1", "x1");
-  for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
-    var group = level[memberIdx];
-    for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
-      var node = group[nodeIdx];
-      node.x = (node.x0 + node.x1) / 2;
+  function sweepAndAverage() {
+    sweepLeftToRight(level, "x", "x0");
+    sweepRightToLeft(level, "x0", "x0");
+    sweepRightToLeft(level, "x", "x1");
+    sweepLeftToRight(level, "x1", "x1");
+    for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
+      var group = level[memberIdx];
+      for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
+        var node = group[nodeIdx];
+        node.x = (node.x0 + node.x1) / 2;
+      }
     }
   }
-}
 
   // Fixed to top, parent to average of children.
   for (var levelIdx = fixedLevel - 1; levelIdx >= 0; levelIdx--) {
@@ -198,6 +198,7 @@ function sweepAndAverage() {
   }
 
 
+  // Add visual elements.
   for (var levelIdx = 0; levelIdx != levels.length; levelIdx++) {
     var level = levels[levelIdx];
     for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
@@ -209,29 +210,42 @@ function sweepAndAverage() {
           diagram.appendChild(node.rect);
         }
 
+        if (!("text" in node)) {
+          node.text = document.createElementNS(namespace, "text");
+          diagram.appendChild(node.text);
+        }
+
         var rect = node.rect;
         var y = levelIdx * (1 + levelsGapRatio);
         rect.setAttribute("x", Math.floor(node.x * xMultiplier) + "px");
         rect.setAttribute("y", Math.floor(y * yMultiplier) + "px");
         rect.setAttribute("width", Math.floor(xMultiplier) + "px");
         rect.setAttribute("height", Math.floor(yMultiplier) + "px");
-        if (levelIdx > 0) {
-          if (!("line" in node)) {
-            node.line = document.createElementNS(namespace, "line");
-            diagram.appendChild(node.line);
-          }
-          var parent = node.parent;
-          var parentOffset = (nodeIdx + 1) / (group.length + 1);
-          var line = node.line;
-          var parentY = (levelIdx - 1) * (1 + levelsGapRatio);
-          line.setAttribute("x1",
-              Math.floor((node.x + .5) * xMultiplier) + "px");
-          line.setAttribute("y1", Math.floor(y * yMultiplier) + "px");
-          line.setAttribute("x2",
-              Math.floor((parent.x + parentOffset) * xMultiplier) + "px");
-          line.setAttribute("y2",
-              Math.floor((parentY + 1) * yMultiplier) + "px");
+
+        var text = node.text;
+        text.setAttribute("x", Math.floor((node.x + 0.5) * xMultiplier) + "px");
+        text.setAttribute("y", Math.floor((y + 0.5) * yMultiplier) + "px");
+        text.textContent = node.label;
+
+        if (levelIdx == 0)
+          continue;
+
+        // Draw lines to parents.
+        if (!("line" in node)) {
+          node.line = document.createElementNS(namespace, "line");
+          diagram.appendChild(node.line);
         }
+        var parent = node.parent;
+        var parentOffset = (nodeIdx + 1) / (group.length + 1);
+        var line = node.line;
+        var parentY = (levelIdx - 1) * (1 + levelsGapRatio);
+        line.setAttribute("x1",
+                Math.floor((node.x + .5) * xMultiplier) + "px");
+        line.setAttribute("y1", Math.floor(y * yMultiplier) + "px");
+        line.setAttribute("x2",
+                Math.floor((parent.x + parentOffset) * xMultiplier) + "px");
+        line.setAttribute("y2",
+                Math.floor((parentY + 1) * yMultiplier) + "px");
       }
     }
   }
