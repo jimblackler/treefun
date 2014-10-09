@@ -1,0 +1,39 @@
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+div#editarea {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+}
+
+div#content {
+    flex-basis: auto;
+    display: flex;
+}
+
+textarea {
+    tab-size: 2;
+    margin: 16px;
+    font-family: monospace;
+    font-size: medium;
+}
+
+textarea#treeentry {
+    overflow: auto;
+    height: 500px;
+}
+
+textarea#options {
+    overflow: auto;
+    height: 150px;
+}
+
+svg#diagramhere {
+    flex: 2;
+    margin: 16px;
+    width: 550px;
+    height: 700px;
+}

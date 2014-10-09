@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <link rel="stylesheet" type="text/css" href="editable.css">
+  <link rel="stylesheet" type="text/css" href="chart.css">
+</head>
+<body>
+
+<div id="content">
+  <div id="editarea">
+  <textarea id="treeentry">
+a
+ b
+  </textarea>
+  <textarea id="options">
+{
+  "groupGapRatio": 0.35,
+  "idealGroupSpacing": 1,
+  "nodeGapRatio": 0.11,
+  "idealNodeSpacing": 0.5,
+  "levelsGapRatio": 1.2,
+  "minimumRows": 6,
+  "minimumColumns": 6
+}
+  </textarea>
+  </div>
+  <svg id="diagramhere"></svg>
+</div>
+<script src="scripts/treetodiagram.js"></script>
+<script src="demo_scripts/texttotree.js"></script>
+<script src="demo_scripts/demoeditable.js"></script>
+</body>
+</html>

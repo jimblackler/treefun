@@ -1,6 +1,6 @@
 "use strict";
 
-var random = Alea(18);
+var random = Alea();//Alea(18);
 
 var max = 500;
 var use = 40;
@@ -30,7 +30,7 @@ makeList2(root, treehere);
 var tree = listToTree(treehere);
 
 var diagramhere = document.getElementById("diagramhere");
-treeToDiagram(tree, diagramhere);
+treeToDiagram(tree, diagramhere, true);
 
 
 
