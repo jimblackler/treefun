@@ -36,8 +36,8 @@ function makeLevels(tree, drawRoot) {
   return levels;
 }
 
-function treeToDiagram(tree, diagram, drawRoot, options) {
-  var levels = makeLevels(tree, drawRoot);
+function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
+  var levels = makeLevels(tree, options.drawRoot);
 
   // Decide which level should be fixed.
   var fixedLevel = -1;
@@ -195,8 +195,8 @@ function treeToDiagram(tree, diagram, drawRoot, options) {
   var useLevels = Math.max(levels.length, options.minimumRows);
   var height = useLevels + (useLevels - 1) * options.levelsGapRatio;
 
-  var diagramWidth = diagram.width.baseVal.value;
-  var diagramHeight = diagram.height.baseVal.value;
+  var diagramWidth = diagramSvg.width.baseVal.value;
+  var diagramHeight = diagramSvg.height.baseVal.value;
 
   var xMultiplier = diagramWidth / maxWidth;
   var yMultiplier = diagramHeight / height;
@@ -212,10 +212,10 @@ function treeToDiagram(tree, diagram, drawRoot, options) {
         var node = group[nodeIdx];
 
         node.rect = document.createElementNS(namespace, "rect");
-        diagram.appendChild(node.rect);
+        diagramGroup.appendChild(node.rect);
 
         node.text = document.createElementNS(namespace, "text");
-        diagram.appendChild(node.text);
+        diagramGroup.appendChild(node.text);
 
         var rect = node.rect;
         var y = levelIdx * (1 + options.levelsGapRatio);
@@ -233,21 +233,22 @@ function treeToDiagram(tree, diagram, drawRoot, options) {
           continue;
 
         // Draw lines to parents.
-        if (!("line" in node)) {
-          node.line = document.createElementNS(namespace, "line");
-          diagram.appendChild(node.line);
-        }
+
+        node.line = document.createElementNS(namespace, "line");
+        diagramGroup.appendChild(node.line);
         var parent = node.parent;
         var parentOffset = (nodeIdx + 1) / (group.length + 1);
         var line = node.line;
         var parentY = (levelIdx - 1) * (1 + options.levelsGapRatio);
         line.setAttribute("x1",
-                Math.floor((node.x + .5) * xMultiplier) + "px");
-        line.setAttribute("y1", Math.floor(y * yMultiplier) + "px");
-        line.setAttribute("x2",
                 Math.floor((parent.x + parentOffset) * xMultiplier) + "px");
-        line.setAttribute("y2",
+        line.setAttribute("y1",
                 Math.floor((parentY + 1) * yMultiplier) + "px");
+        line.setAttribute("x2",
+                Math.floor((node.x + .5) * xMultiplier) + "px");
+        line.setAttribute("y2", Math.floor(y * yMultiplier) + "px");
+
+        line.setAttribute("marker-end", "url(#arrowHead)");
       }
     }
   }

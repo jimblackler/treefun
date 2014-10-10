@@ -1,13 +1,16 @@
-var treeentry = document.getElementById("treeentry");
+var treeentry = document.getElementById("treeEntry");
 var options = document.getElementById("options");
 
 function draw() {
   var tree = textToTree(treeentry.value);
-  var diagramhere = document.getElementById("diagramhere");
-  while (diagramhere.children.length > 0)
-    diagramhere.removeChild(diagramhere.children[0]);
+  var diagramGroup = document.getElementById("diagramGroup");
 
-  treeToDiagram(tree, diagramhere, false, JSON.parse(options.value));
+  // Clear diagram group.
+  while (diagramGroup.children.length > 0)
+    diagramGroup.removeChild(diagramGroup.children[0]);
+
+  treeToDiagram(tree, document.getElementById("diagramSvg"), diagramGroup,
+      JSON.parse(options.value));
 }
 
 treeentry.addEventListener("input", draw);

@@ -8,27 +8,37 @@
 <body>
 
 <div id="content">
-  <div id="editarea">
-  <textarea id="treeentry">
+  <div id="editArea">
+  <textarea id="treeEntry">
 a
  b
   </textarea>
   <textarea id="options">
 {
   "groupGapRatio": 0.35,
-  "idealGroupSpacing": 1,
+  "idealGroupSpacing": 1.2,
   "nodeGapRatio": 0.11,
   "idealNodeSpacing": 0.5,
   "levelsGapRatio": 1.2,
   "minimumRows": 6,
-  "minimumColumns": 6
+  "minimumColumns": 6,
+  "drawRoot": false
 }
   </textarea>
   </div>
-  <svg id="diagramhere"></svg>
+  <svg id="diagramSvg">
+    <defs>
+      <marker id="arrowHead" viewBox="0 0 10 10" refX="10" refY="5"
+              markerUnits="strokeWidth" markerWidth="6" markerHeight="6"
+              orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z"></path>
+      </marker>
+    </defs>
+    <g id="diagramGroup"></g>
+  </svg>
 </div>
 <script src="scripts/treetodiagram.js"></script>
 <script src="demo_scripts/texttotree.js"></script>
-<script src="demo_scripts/demoeditable.js"></script>
+<script src="demo_scripts/demoEditable.js"></script>
 </body>
 </html>

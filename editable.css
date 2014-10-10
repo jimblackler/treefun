@@ -3,7 +3,7 @@ body {
     flex-direction: column;
 }
 
-div#editarea {
+div#editArea {
     display: flex;
     flex-direction: column;
     width: 250px;
@@ -21,7 +21,7 @@ textarea {
     font-size: medium;
 }
 
-textarea#treeentry {
+textarea#treeEntry {
     overflow: auto;
     height: 500px;
 }
@@ -31,7 +31,7 @@ textarea#options {
     height: 150px;
 }
 
-svg#diagramhere {
+svg#diagramSvg {
     flex: 2;
     margin: 16px;
     width: 550px;
