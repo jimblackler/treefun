@@ -1,4 +1,4 @@
-
+"use strict";
 var treeentry = document.getElementById("treeEntry");
 var options = document.getElementById("options");
 

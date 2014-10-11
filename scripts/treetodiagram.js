@@ -36,6 +36,62 @@ function makeLevels(tree, drawRoot) {
   return levels;
 }
 
+function sweepLeftToRight(level, infield, outfield, options) {
+  var minX = 0;
+  for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
+    var group = level[memberIdx];
+    for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
+      var node = group[nodeIdx];
+      var newX;
+      if (infield in node && node[infield] > minX)
+        newX = node[infield];
+      else
+        newX = minX;
+      if (nodeIdx == group.length - 1)
+        minX = newX + 1 + options.groupGapRatio;
+      else
+        minX = newX + 1 + options.nodeGapRatio;
+      node[outfield] = newX;
+    }
+  }
+}
+
+
+function sweepRightToLeft(level, infield, outfield, maxWidth, options) {
+  var maxX = maxWidth - 1;
+  for (var memberIdx = level.length - 1; memberIdx >= 0; memberIdx--) {
+    var group = level[memberIdx];
+    for (var nodeIdx = group.length - 1; nodeIdx >= 0; nodeIdx--) {
+      var node = group[nodeIdx];
+      var newX;
+      if (infield in node && node[infield] < maxX)
+        newX = node[infield];
+      else
+        newX = maxX;
+      if (nodeIdx == 0)
+        maxX = newX - 1 - options.groupGapRatio;
+      else
+        maxX = newX - 1 - options.nodeGapRatio;
+      node[outfield] = newX;
+    }
+  }
+}
+
+function sweepAndAverage(level, maxWidth, options) {
+  sweepLeftToRight(level, "x", "x0", options);
+  sweepRightToLeft(level, "x0", "x0", maxWidth, options);
+  sweepRightToLeft(level, "x", "x1", maxWidth, options);
+  sweepLeftToRight(level, "x1", "x1", options);
+  for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
+    var group = level[memberIdx];
+    for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
+      var node = group[nodeIdx];
+      node.x = (node.x0 + node.x1) / 2;
+    }
+  }
+}
+
+
 function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
   var levels = makeLevels(tree, options.drawRoot);
 
@@ -95,61 +151,6 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
     x += useGroupGapRatio;
   }
 
-  function sweepLeftToRight(level, infield, outfield) {
-    var minX = 0;
-    for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
-      var group = level[memberIdx];
-      for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
-        var node = group[nodeIdx];
-        var newX;
-        if (infield in node && node[infield] > minX)
-          newX = node[infield];
-        else
-          newX = minX;
-        if (nodeIdx == group.length - 1)
-          minX = newX + 1 + options.groupGapRatio;
-        else
-          minX = newX + 1 + options.nodeGapRatio;
-        node[outfield] = newX;
-      }
-    }
-  }
-
-
-  function sweepRightToLeft(level, infield, outfield) {
-    var maxX = maxWidth - 1;
-    for (var memberIdx = level.length - 1; memberIdx >= 0; memberIdx--) {
-      var group = level[memberIdx];
-      for (var nodeIdx = group.length - 1; nodeIdx >= 0; nodeIdx--) {
-        var node = group[nodeIdx];
-        var newX;
-        if (infield in node && node[infield] < maxX)
-          newX = node[infield];
-        else
-          newX = maxX;
-        if (nodeIdx == 0)
-          maxX = newX - 1 - options.groupGapRatio;
-        else
-          maxX = newX - 1 - options.nodeGapRatio;
-        node[outfield] = newX;
-      }
-    }
-  }
-
-  function sweepAndAverage() {
-    sweepLeftToRight(level, "x", "x0");
-    sweepRightToLeft(level, "x0", "x0");
-    sweepRightToLeft(level, "x", "x1");
-    sweepLeftToRight(level, "x1", "x1");
-    for (var memberIdx = 0; memberIdx != level.length; memberIdx++) {
-      var group = level[memberIdx];
-      for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
-        var node = group[nodeIdx];
-        node.x = (node.x0 + node.x1) / 2;
-      }
-    }
-  }
-
   // Fixed to top; parent to average of children.
   for (var levelIdx = fixedLevel - 1; levelIdx >= 0; levelIdx--) {
     var level = levels[levelIdx];
@@ -168,7 +169,7 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
         node.x = totalX / node.children.length;
       }
     }
-    sweepAndAverage();
+    sweepAndAverage(level, maxWidth, options);
   }
 
   // Second level to bottom; children distributed under parent.
@@ -187,7 +188,7 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
         x += 1 + options.idealNodeSpacing;
       }
     }
-    sweepAndAverage();
+    sweepAndAverage(level, maxWidth, options);
   }
 
   // Render the tree.
