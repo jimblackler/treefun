@@ -6,7 +6,7 @@ body {
 div#editArea {
     display: flex;
     flex-direction: column;
-    width: 250px;
+    width: 270px;
 }
 
 div#content {
@@ -34,6 +34,6 @@ textarea#options {
 svg#diagramSvg {
     flex: 2;
     margin: 16px;
-    width: 550px;
+    width: 530px;
     height: 700px;
 }

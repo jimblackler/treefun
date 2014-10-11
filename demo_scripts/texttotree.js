@@ -1,3 +1,5 @@
+"use strict";
+
 function textToTree(text) {
 
   var lines = text.split(/\n/);

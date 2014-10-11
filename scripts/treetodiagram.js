@@ -218,6 +218,7 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
         diagramGroup.appendChild(node.text);
 
         var rect = node.rect;
+
         var y = levelIdx * (1 + options.levelsGapRatio);
         rect.setAttribute("x", Math.floor(node.x * xMultiplier) + "px");
         rect.setAttribute("y", Math.floor(y * yMultiplier) + "px");
@@ -225,9 +226,11 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
         rect.setAttribute("height", Math.floor(yMultiplier) + "px");
 
         var text = node.text;
-        text.setAttribute("x", Math.floor((node.x + 0.5) * xMultiplier) + "px");
-        text.setAttribute("y", Math.floor((y + 0.5) * yMultiplier) + "px");
-        text.textContent = node.label;
+        var xPos = Math.floor((node.x + 0.5) * xMultiplier);
+        text.setAttribute("x", xPos + "px");
+        text.setAttribute("y", Math.floor(y * yMultiplier) + "px");
+
+        layoutText(text, node.label, xMultiplier - 2, xPos, yMultiplier);
 
         if (levelIdx == 0)
           continue;
