@@ -196,12 +196,32 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
   var useLevels = Math.max(levels.length, options.minimumRows);
   var height = useLevels + (useLevels - 1) * options.levelsGapRatio;
 
-  var diagramWidth = diagramSvg.width.baseVal.value;
-  var diagramHeight = diagramSvg.height.baseVal.value;
+  var xAttribute;
+  var yAttribute;
+  var widthAttribute;
+  var heightAttribute;
+
+  if (options.flipXY) {
+    xAttribute = "y";
+    yAttribute = "x";
+    widthAttribute = "height";
+    heightAttribute = "width";
+  } else {
+    xAttribute = "x";
+    yAttribute = "y";
+    widthAttribute = "width";
+    heightAttribute = "height";
+  }
+
+  diagramSvg.style.width = options.width + "px";
+  diagramSvg.style.height = options.height + "px";
+
+  var diagramWidth = options[widthAttribute];
+  var diagramHeight = options[heightAttribute];
+
 
   var xMultiplier = diagramWidth / maxWidth;
   var yMultiplier = diagramHeight / height;
-
 
   // Add visual elements.
   var namespace = "http://www.w3.org/2000/svg";
@@ -212,26 +232,33 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
       for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
         var node = group[nodeIdx];
 
-        node.rect = document.createElementNS(namespace, "rect");
-        diagramGroup.appendChild(node.rect);
+        var rect = document.createElementNS(namespace, "rect");
+        diagramGroup.appendChild(rect);
 
-        node.text = document.createElementNS(namespace, "text");
-        diagramGroup.appendChild(node.text);
+        var yValue = levelIdx * (1 + options.levelsGapRatio);
 
-        var rect = node.rect;
+        rect.setAttribute(xAttribute, Math.floor(node.x * xMultiplier) + "px");
+        rect.setAttribute(yAttribute, Math.floor(yValue * yMultiplier) + "px");
+        rect.setAttribute(widthAttribute, Math.floor(xMultiplier) + "px");
+        rect.setAttribute(heightAttribute, Math.floor(yMultiplier) + "px");
 
-        var y = levelIdx * (1 + options.levelsGapRatio);
-        rect.setAttribute("x", Math.floor(node.x * xMultiplier) + "px");
-        rect.setAttribute("y", Math.floor(y * yMultiplier) + "px");
-        rect.setAttribute("width", Math.floor(xMultiplier) + "px");
-        rect.setAttribute("height", Math.floor(yMultiplier) + "px");
+        var text = document.createElementNS(namespace, "text");
+        diagramGroup.appendChild(text);
 
-        var text = node.text;
-        var xPos = Math.floor((node.x + 0.5) * xMultiplier);
-        text.setAttribute("x", xPos + "px");
-        text.setAttribute("y", Math.floor(y * yMultiplier) + "px");
+        var margin = 0; // 2
+        if (options.flipXY) {
+          var xPos = Math.floor(node.x * xMultiplier);
+          var yPos = Math.floor((yValue + 0.5) * yMultiplier);
+          text.setAttribute(xAttribute, xPos + "px");
+          text.setAttribute(yAttribute, Math.floor(yValue * yMultiplier) + "px");
 
-        layoutText(text, node.label, xMultiplier - 2, xPos, yMultiplier);
+          layoutText(text, node.label, yMultiplier - margin, yPos, xMultiplier, options.lineSpacing);
+        } else {
+          var xPos = Math.floor((node.x + 0.5) * xMultiplier);
+          text.setAttribute(xAttribute, xPos + "px");
+          text.setAttribute(yAttribute, Math.floor(yValue * yMultiplier) + "px");
+          layoutText(text, node.label, xMultiplier - margin, xPos, yMultiplier, options.lineSpacing);
+        }
 
         if (levelIdx == 0)
           continue;
@@ -240,17 +267,16 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
 
         node.line = document.createElementNS(namespace, "line");
         diagramGroup.appendChild(node.line);
-        var parent = node.parent;
         var parentOffset = (nodeIdx + 1) / (group.length + 1);
         var line = node.line;
         var parentY = (levelIdx - 1) * (1 + options.levelsGapRatio);
-        line.setAttribute("x1",
-                Math.floor((parent.x + parentOffset) * xMultiplier) + "px");
-        line.setAttribute("y1",
+        line.setAttribute(xAttribute + "1",
+                Math.floor((node.parent.x + parentOffset) * xMultiplier) + "px");
+        line.setAttribute(yAttribute + "1",
                 Math.floor((parentY + 1) * yMultiplier) + "px");
-        line.setAttribute("x2",
+        line.setAttribute(xAttribute + "2",
                 Math.floor((node.x + .5) * xMultiplier) + "px");
-        line.setAttribute("y2", Math.floor(y * yMultiplier) + "px");
+        line.setAttribute(yAttribute + "2", Math.floor(yValue * yMultiplier) + "px");
 
         line.setAttribute("marker-end", "url(#arrowHead)");
       }

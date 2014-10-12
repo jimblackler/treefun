@@ -7,8 +7,8 @@ function draw() {
   var diagramGroup = document.getElementById("diagramGroup");
 
   // Clear diagram group.
-  while (diagramGroup.children.length > 0)
-    diagramGroup.removeChild(diagramGroup.children[0]);
+  while (diagramGroup.childNodes.length > 0)
+    diagramGroup.removeChild(diagramGroup.childNodes[0]);
 
   treeToDiagram(tree, document.getElementById("diagramSvg"), diagramGroup,
       JSON.parse(options.value));

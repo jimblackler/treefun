@@ -13,14 +13,13 @@ function splitBy(array, char) {
   return out;
 }
 
-function layoutText(textNode, text, width, x, height) {
+function layoutText(textNode, text, width, x, height, dy) {
   var namespace = "http://www.w3.org/2000/svg";
   var previousFit = "";
   var tspan = document.createElementNS(namespace, "tspan");
   tspan.setAttributeNS(null, "x", x);
   textNode.appendChild(tspan);
   tspan.textContent = "!";
-  var dy = tspan.getBBox().height;
   height -= dy;
   tspan.textContent = "";
 
