@@ -48,9 +48,9 @@ function sweepLeftToRight(level, infield, outfield, options) {
       else
         newX = minX;
       if (nodeIdx == group.length - 1)
-        minX = newX + 1 + options.groupGapRatio;
+        minX = newX + 1 + options.minimumCousinGap;
       else
-        minX = newX + 1 + options.nodeGapRatio;
+        minX = newX + 1 + options.siblingGap;
       node[outfield] = newX;
     }
   }
@@ -69,9 +69,9 @@ function sweepRightToLeft(level, infield, outfield, maxWidth, options) {
       else
         newX = maxX;
       if (nodeIdx == 0)
-        maxX = newX - 1 - options.groupGapRatio;
+        maxX = newX - 1 - options.minimumCousinGap;
       else
-        maxX = newX - 1 - options.nodeGapRatio;
+        maxX = newX - 1 - options.siblingGap;
       node[outfield] = newX;
     }
   }
@@ -109,8 +109,8 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
       spacing += groupSpacing;
       var group = level[memberIdx];
       nodesWidth += group.length;
-      spacing += (group.length - 1) * options.nodeGapRatio;
-      groupSpacing = options.groupGapRatio;
+      spacing += (group.length - 1) * options.siblingGap;
+      groupSpacing = options.minimumCousinGap;
     }
     var width = spacing + nodesWidth;
     if (fixedLevel == -1 || width > widths[fixedLevel])
@@ -120,20 +120,20 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
   }
 
   var maxWidth = Math.max(widths[fixedLevel],
-          options.minimumColumns * (1 + options.levelsGapRatio))
+          options.minimumBreadth * (1 + options.levelsGap))
 
   // Position and make elements
   var level = levels[fixedLevel];
 
   // Use any extra space to increase group gap up to ideal gap...
-  var useNodeGapRatio = options.nodeGapRatio;
+  var usesiblingGap = options.siblingGap;
   var spare = (maxWidth - widths[fixedLevel]);
-  var useGroupGapRatio = options.groupGapRatio;
+  var useCousinGap = options.minimumCousinGap;
   if (level.length > 1) {
     var spareForGroupGaps = Math.min(spare / (level.length - 1),
-        (options.idealGroupSpacing - options.groupGapRatio));
+        (options.idealCousinGap - options.minimumCousinGap));
     spare -= spareForGroupGaps * (level.length - 1);
-    useGroupGapRatio += spareForGroupGaps;
+    useCousinGap += spareForGroupGaps;
   }
   // ... any left is used to center the fixed group.
   var x = spare / 2;
@@ -146,9 +146,9 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
       var node = group[nodeIdx];
       node.x = x;
       x += 1;
-      nodeSpacing = useNodeGapRatio;
+      nodeSpacing = usesiblingGap;
     }
-    x += useGroupGapRatio;
+    x += useCousinGap;
   }
 
   // Fixed to top; parent to average of children.
@@ -180,21 +180,24 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
       var group = level[memberIdx];
       var parent = group[0].parent;
 
-      var groupWidth = (group.length - 1) * (1 + options.idealNodeSpacing);
+      var groupWidth = (group.length - 1) * (1 + options.idealSiblingGap);
       var x = parent.x - groupWidth / 2;
       for (var nodeIdx = 0; nodeIdx != group.length; nodeIdx++) {
         var node = group[nodeIdx];
         node.x = x;
-        x += 1 + options.idealNodeSpacing;
+        x += 1 + options.idealSiblingGap;
       }
     }
     sweepAndAverage(level, maxWidth, options);
   }
 
   // Render the tree.
+  diagramSvg.getElementById("arrowHead").setAttribute(
+      "markerHeight", options.arrowHeadSize);
+
   // Find height ratio
-  var useLevels = Math.max(levels.length, options.minimumRows);
-  var height = useLevels + (useLevels - 1) * options.levelsGapRatio;
+  var useLevels = Math.max(levels.length, options.minimumDepth);
+  var height = useLevels + (useLevels - 1) * options.levelsGap;
 
   var xAttribute;
   var yAttribute;
@@ -235,7 +238,7 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
         var rect = document.createElementNS(namespace, "rect");
         diagramGroup.appendChild(rect);
 
-        var yValue = levelIdx * (1 + options.levelsGapRatio);
+        var yValue = levelIdx * (1 + options.levelsGap);
 
         rect.setAttribute(xAttribute, Math.floor(node.x * xMultiplier) + "px");
         rect.setAttribute(yAttribute, Math.floor(yValue * yMultiplier) + "px");
@@ -245,19 +248,20 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
         var text = document.createElementNS(namespace, "text");
         diagramGroup.appendChild(text);
 
-        var margin = 0; // 2
         if (options.flipXY) {
           var xPos = Math.floor(node.x * xMultiplier);
           var yPos = Math.floor((yValue + 0.5) * yMultiplier);
           text.setAttribute(xAttribute, xPos + "px");
           text.setAttribute(yAttribute, Math.floor(yValue * yMultiplier) + "px");
 
-          layoutText(text, node.label, yMultiplier - margin, yPos, xMultiplier, options.lineSpacing);
+          layoutText(text, node.label, yMultiplier - options.labelPadding, yPos,
+              xMultiplier, options.labelLineSpacing);
         } else {
           var xPos = Math.floor((node.x + 0.5) * xMultiplier);
           text.setAttribute(xAttribute, xPos + "px");
           text.setAttribute(yAttribute, Math.floor(yValue * yMultiplier) + "px");
-          layoutText(text, node.label, xMultiplier - margin, xPos, yMultiplier, options.lineSpacing);
+          layoutText(text, node.label, xMultiplier - options.labelPadding, xPos, yMultiplier,
+              options.labelLineSpacing);
         }
 
         if (levelIdx == 0)
@@ -269,14 +273,23 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
         diagramGroup.appendChild(node.line);
         var parentOffset = (nodeIdx + 1) / (group.length + 1);
         var line = node.line;
-        var parentY = (levelIdx - 1) * (1 + options.levelsGapRatio);
-        line.setAttribute(xAttribute + "1",
+        var parentY = (levelIdx - 1) * (1 + options.levelsGap);
+        var first;
+        var second;
+        if (options.arrowsUp) {
+          first = "2";
+          second = "1";
+        } else {
+          first = "1";
+          second = "2";
+        }
+        line.setAttribute(xAttribute + first,
                 Math.floor((node.parent.x + parentOffset) * xMultiplier) + "px");
-        line.setAttribute(yAttribute + "1",
+        line.setAttribute(yAttribute + first,
                 Math.floor((parentY + 1) * yMultiplier) + "px");
-        line.setAttribute(xAttribute + "2",
+        line.setAttribute(xAttribute + second,
                 Math.floor((node.x + .5) * xMultiplier) + "px");
-        line.setAttribute(yAttribute + "2", Math.floor(yValue * yMultiplier) + "px");
+        line.setAttribute(yAttribute + second, Math.floor(yValue * yMultiplier) + "px");
 
         line.setAttribute("marker-end", "url(#arrowHead)");
       }

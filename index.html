@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <link rel="stylesheet" type="text/css" href="editable.css">
+</head>
+<body>
+<div id="control">
+<a href="#">About the tree generator by Jim Blackler</a>
+
+<a href="#" id="viewSave" download>View/Save diagram</a>
+<a href="index.html?data=wow">Demo (WOW)</a>
+<a href="index.html?data=collatz">Demo (Collatz)</a>
+<a href="index.html?data=java">Demo (Java Throwables)</a>
+<a href="index.html?data=animals">Demo (Animals)</a>
+<a href="index.html?data=army">Demo (Army)</a>
+<a href="index.html?data=unix">Demo (Unix)</a>
+</div>
+<div id="content">
+  <div id="editArea">
+  <textarea id="treeEntry">
+a
+ b
+  </textarea>
+  <textarea id="options">
+{
+  "flipXY": 0,
+  "width": 900,
+  "height": 700,
+  "labelLineSpacing": 15,
+  "labelPadding": 2,
+  "arrowHeadSize": 5,
+  "arrowsUp": 0,
+  "siblingGap": 0.11,
+  "idealSiblingGap": 0.3,
+  "minimumCousinGap": 0.5,
+  "idealCousinGap": 1.2,
+  "levelsGap": 1.2,
+  "minimumDepth": 6,
+  "minimumBreadth": 6,
+  "drawRoot": false
+}
+  </textarea>
+  <textarea id="styles">
+text {
+  text-anchor: middle;
+  font-size: small;
+  font-weight: bold;
+}
+
+rect {
+  fill: lightblue;
+  stroke: black;
+  opacity: 0.5;
+  stroke-width: 1.5;
+}
+
+line {
+  stroke: black;
+  opacity: 0.5;
+  stroke-width: 1.5;
+}
+  </textarea>
+  </div>
+  <span>
+    <svg id="diagramSvg" xmlns="http://www.w3.org/2000/svg">
+      <style id="stylesheet"> </style>
+      <defs>
+        <marker id="arrowHead" viewBox="-10 -5 10 10"
+                markerUnits="strokeWidth" markerWidth="6" markerHeight="5"
+                orient="auto">
+          <path d="M -10 -5 L 0 0 L -10 5 z"></path>
+        </marker>
+      </defs>
+      <g id="diagramGroup"></g>
+    </svg>
+  </span>
+</div>
+<script src="scripts/treeToDiagram.js"></script>
+<script src="scripts/layoutText.js"></script>
+<script src="demo_scripts/gup.js"></script>
+<script src="demo_scripts/textToTree.js"></script>
+<script src="demo_scripts/demoEditable.js"></script>
+</body>
+</html>

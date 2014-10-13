@@ -1,6 +1,14 @@
 body {
-    display: flex;
-    flex-direction: column;
+}
+
+a {
+    text-decoration: none;
+    font-weight: bold;
+    margin: 10px;
+}
+
+a:hover {
+    background: yellow;
 }
 
 div#editArea {
@@ -26,7 +34,7 @@ textarea#treeEntry {
     height: 500px;
 }
 
-textarea#options {
+textarea#options, textarea#styles {
     overflow: auto;
     height: 150px;
 }
