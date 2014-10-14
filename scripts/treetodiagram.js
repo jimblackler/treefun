@@ -1,5 +1,14 @@
 "use strict";
 
+/*
+ Tree Generator copyright Jim Blackler 2014. All enquiries jimblackler@gmail.com
+
+ Tree Generator is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ */
+
 function buildNextLevel(groups) {
   var groupsOut = [];
   for (var groupIdx = 0; groupIdx != groups.length; groupIdx++) {
@@ -232,7 +241,6 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
   var diagramWidth = options[widthAttribute];
   var diagramHeight = options[heightAttribute];
 
-
   var xMultiplier = diagramWidth / maxWidth;
   var yMultiplier = diagramHeight / height;
 
@@ -263,7 +271,8 @@ function treeToDiagram(tree, diagramSvg, diagramGroup, options) {
           var xPos = Math.floor(node.x * xMultiplier);
           var yPos = Math.floor((yValue + 0.5) * yMultiplier);
           text.setAttribute(xAttribute, xPos + "px");
-          text.setAttribute(yAttribute, Math.floor(yValue * yMultiplier) + "px");
+          text.setAttribute(yAttribute,
+                  Math.floor(yValue * yMultiplier) + "px");
 
           layoutText(text, node.label, yMultiplier - options.labelPadding, yPos,
               xMultiplier, options.labelLineSpacing);
