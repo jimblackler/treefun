@@ -4,7 +4,9 @@ A tree diagram (SVG) generation tool in JavaScript
 This tool creates SVG (Standard Vector Graphics) files to illustrate information
 stored in a basic tree data structure.
 
-Here I define "tree" as an ordered graph without loops where every node has zero
+![Simple tree image](doc/simple_tree.png)
+
+Here I define *tree* as an ordered graph without loops where every node has zero
 or one outgoing edges (i.e. to a 'parent' node in the same tree).
 
 It's a very common structure in computing and will be familiar to most as the
@@ -14,8 +16,26 @@ programming language (as seen in the 'Java' example).
 
 Lots of real world data can be formatted this way too. For instance an 'org
 chart' of the hierarchy of an organization (because everyone has a boss, apart
-from the overall boss).
+from the boss of the company).
 
-See the Wikipedia article on trees
-http://en.wikipedia.org/wiki/Tree_(data_structure)
+See the [Wikipedia article](http://en.wikipedia.org/wiki/Tree_%28data_structure%29)
+on trees
 
+
+
+Method
+------
+
+
+
+Customization
+-------------
+
+Each graph can be customized 
+
+
+Heading
+=======
+
+Sub-heading
+-----------
