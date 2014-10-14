@@ -16,3 +16,6 @@ Lots of real world data can be formatted this way too. For instance an 'org
 chart' of the hierarchy of an organization (because everyone has a boss, apart
 from the overall boss).
 
+See the Wikipedia article on trees
+http://en.wikipedia.org/wiki/Tree_(data_structure)
+
