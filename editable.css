@@ -1,6 +1,13 @@
 body {
 }
 
+label {
+    font-weight: bold;
+    font-size: medium;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
 a {
     text-decoration: none;
     font-weight: bold;
