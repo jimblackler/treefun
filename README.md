@@ -22,10 +22,10 @@ See the [Wikipedia article](http://en.wikipedia.org/wiki/Tree_%28data_structure%
 on trees
 
 
-
 Method
 ------
 
+Relative values are assigned for the widths of nodes and the spaces between sibling nodes (nodes that share the same parent) and cousin nodes (nodes that are the same distance from their roots but don't share the same parent).
 
 
 Customization
