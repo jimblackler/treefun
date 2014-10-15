@@ -7,26 +7,37 @@ stored in a basic tree data structure.
 ![Simple tree image](doc/simple_tree.png)
 
 Here I define *tree* as an ordered graph without loops where every node has zero
-or one outgoing edges (i.e. to a 'parent' node in the same tree).
+or one 'parent' nodes in the same tree.
 
 It's a very common structure in computing and will be familiar to most as the
 structure of folders on a personal computer (as seen in the ['Unix'
 example][1]). It's also the structure of classes in a single-inheritance object
 oriented programming language (as seen in the ['Java' example][2]).
 
-Lots of real world data can be formatted this way too. For instance an 'org
-chart' of the hierarchy of an organization (because everyone has a boss, apart
-from the boss of the company).
+However lots of real world data can be formatted this way too. For instance an
+'org chart' of the hierarchy of an organization (because everyone has a boss,
+apart from the boss of the company).
 
 See the [Wikipedia article][3] on trees.
 
+Project
+-------
+
+I wanted to visualize binary search trees to help understand a problem, but I
+couldn't find a simple tool to take tree data as text and to output it as a
+line drawing. So, I decided to make one myself. 
+
+It may be useful as a tool to generate diagrams of tree structures for
+documents, presentations and so forth, so I'm putting it [online][4].
+
+The tool is written in pure JavaScript and creates SVGs that all modern browsers
+can render. This means the scripts can also be dropped directly into web
+applications that create tree data on the fly, as a reporting/visualization
+tool. The source is freely licensed under GPL and [placed on GitHub][5].
 
 Use
 ---
 
-I primarily built this diagram generator to try out some ideas about how to
-create such diagrams. However I realized it may be useful as a tool to generate
-diagrams of tree structures for documents, presentations and so forth.
 
 All you have to do is visit one of the demo pages and edit the data (specified
 in classic tabular style, e.g: 
@@ -69,11 +80,6 @@ CSS as follows...
 
 .. would result in this diagram:
 ![Custom style tree](doc/custom_tree_styled.png)
-
-
-The scripts can also be dropped directly into web applications that create tree
-data on the fly, as a reporting/visualization tool. The source is freely
-licensed under GPL and [placed on GitHub][4].
 
 
 Method
@@ -136,4 +142,5 @@ that are the same distance from their roots but don't share the same parent).
 [1]: http://jimblackler.net/treefun/index.html?data=unix
 [2]: http://jimblackler.net/treefun/index.html?data=java
 [3]: http://en.wikipedia.org/wiki/Tree_(data_structure)
-[4]: https://github.com/jimblackler/treefun
+[4]: http://jimblackler.net/treefun/index.html
+[5]: https://github.com/jimblackler/treefun
