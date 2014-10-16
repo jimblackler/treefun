@@ -1,8 +1,8 @@
 A tree diagram (SVG) generation tool in JavaScript
 ==================================================
 
-This tool creates SVG (Standard Vector Graphics) files to illustrate information
-stored in a basic tree data structure.
+[This tool][4] creates SVG (Standard Vector Graphics) files to illustrate
+information structured as a basic tree.
 
 ![Simple tree image](doc/simple_tree.png)
 
@@ -24,12 +24,12 @@ Project
 I wanted to visualize binary search trees to help understand a problem, but I
 couldn't find a simple tool to take tree data as text and to output it as a line
 drawing. I also became interested in the problem of arranging arbitrary tree
-arrangements neatly, in the original order, without overlapping and with
-sensible spacing between elements. So, I decided to make a tree diagram tool
-myself.
+arrangements neatly, in the original breadthwise order, without overlapping and
+with sensible spacing between elements. So, I decided to make a tree diagram
+tool myself.
 
 It may be useful as a tool to generate diagrams of tree structures for
-documents, presentations and so forth, so I'm putting it [online][4].
+documents, presentations and so forth, so [I've put it online][4].
 
 ![Example tree showing character classifications in an online game](doc/wow_tree.png)
 
@@ -115,6 +115,8 @@ that are the same distance from their roots but don't share the same parent).
 * The level that occupies the most screen width is nominated as the *fixed*
   level.
 
+![Fixed row](doc/fixed_row.png)
+
 * All levels between the fixed level up to an including the root are now
   considered in turn. For nodes that have children (in the level below) they are
   given an ideal horizontal position as the average (horizontally) of their
@@ -136,6 +138,8 @@ that are the same distance from their roots but don't share the same parent).
   the positions after sweep two and sweep four are averaged to determine the
   final position of the nodes; non- overlapping and evenly positioned in the
   available space.
+  
+![Illustration of the sweep process](doc/combined.png)
 
 * A similar operation is performed on all the levels below the fixed level
   travelling downwards. On this occasion, the ideal horizontal position for the
