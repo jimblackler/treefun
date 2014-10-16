@@ -9,7 +9,7 @@ stored in a basic tree data structure.
 Here I define *tree* as an ordered graph without loops where every node has zero
 or one 'parent' nodes in the same tree.
 
-It's a very common structure in computing and will be familiar to most as the
+It's a [very common structure][3] in computing and will be familiar to most as the
 structure of folders on a personal computer (as seen in the ['Unix'
 example][1]). It's also the structure of classes in a single-inheritance object
 oriented programming language (as seen in the ['Java' example][2]).
@@ -18,29 +18,32 @@ However lots of real world data can be formatted this way too. For instance an
 'org chart' of the hierarchy of an organization (because everyone has a boss,
 apart from the boss of the company).
 
-See the [Wikipedia article][3] on trees.
-
 Project
 -------
 
 I wanted to visualize binary search trees to help understand a problem, but I
-couldn't find a simple tool to take tree data as text and to output it as a
-line drawing. So, I decided to make one myself. 
+couldn't find a simple tool to take tree data as text and to output it as a line
+drawing. I also became interested in the problem of arranging arbitrary tree
+arrangements neatly, in the original order, without overlapping and with
+sensible spacing between elements. So, I decided to make a tree diagram tool
+myself.
 
 It may be useful as a tool to generate diagrams of tree structures for
 documents, presentations and so forth, so I'm putting it [online][4].
+
+![Example tree showing character classifications in an online game](doc/wow_tree.png)
 
 The tool is written in pure JavaScript and creates SVGs that all modern browsers
 can render. This means the scripts can also be dropped directly into web
 applications that create tree data on the fly, as a reporting/visualization
 tool. The source is freely licensed under GPL and [placed on GitHub][5].
 
+
 Use
 ---
 
-
-All you have to do is visit one of the demo pages and edit the data (specified
-in classic tabular style, e.g: 
+To make your own diagrams all you have to do is visit one of the demo pages and
+edit the data (specified in classic tabular style, e.g: 
 
     My Root
      My First Child
@@ -117,25 +120,34 @@ that are the same distance from their roots but don't share the same parent).
   given an ideal horizontal position as the average (horizontally) of their
   children.
 
-  A 'sweep' process then travels left to right across the nodes and
-  forcing the rightmost node of each considered pair further right to ensure
-  that it is not positioned too closely to its predecessor. As this may push
-  nodes outside the diagram area, a return sweep performs the same operation
-  from right to left with the rightmost element constrained to the available
-  horizontal space.
+  A 'sweep' process then travels left to right across the nodes and forcing the
+  rightmost node of each considered pair further right to ensure that it is not
+  positioned too closely to its predecessor. As this may push nodes outside the
+  diagram area, a return sweep performs the same operation from right to left
+  with the rightmost element constrained to the available horizontal space.
 
-  These positions won't overlap. However they will result in nodes positioned
-  immediately to the right of neighbours when there is a much greater gap that
-  could be occupied. In order to have nodes occupy the central position in the
-  available space, a third and fourth sweep are performed in mirror-image of the
-  first two (right to left then left to right). The positions after sweep two
-  and sweep four are average to set the final position of the nodes; non-
-  overlapping and evenly positioned in the available space.
+  These positions won't result in overlapping elements. However because of the
+  way the sweep operates, elements will often result in nodes positioned
+  immediately to the right of neighbours when there is a large gap remaining
+  that could be occupied. In order to have nodes occupy the central position in
+  the available space, a third and fourth sweep are performed in mirror-image of
+  the first two (right to left then left to right). Naturally after sweep four
+  the elements are often positioned immediately to the *left* of neighbours. So,
+  the positions after sweep two and sweep four are averaged to determine the
+  final position of the nodes; non- overlapping and evenly positioned in the
+  available space.
 
 * A similar operation is performed on all the levels below the fixed level
   travelling downwards. On this occasion, the ideal horizontal position for the
-  nodes is an even distribution of children underneath and centered to their
-  parent node.
+  nodes is an even distribution of children underneath, with the group centered
+  on their parent node.
+
+Contact
+-------
+
+I hope some find the tool useful or interesting. As ever feel free to contact me
+on the comments or at jimblackler@gmail.com, or make requests via the
+[GitHub page][5].
 
 
 
