@@ -149,7 +149,7 @@ that are the same distance from their roots but don't share the same parent).
 Contact
 -------
 
-I hope some find the tool useful or interesting. (Check out the site)[4] and as
+I hope some find the tool useful or interesting. [Check out the site][4] and as
 ever, feel free to contact me on the comments or at jimblackler@gmail.com, or
 make requests via the [GitHub page][5].
 
