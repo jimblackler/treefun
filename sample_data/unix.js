@@ -5,6 +5,7 @@ demo({
     "width": 950,
     "height": 680,
     "labelLineSpacing": 12,
+    "cornerRounding": 0,
     "labelPadding": 0,
     "arrowHeadSize": 5,
     "arrowsUp": 0,
