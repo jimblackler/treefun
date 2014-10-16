@@ -36,7 +36,7 @@ documents, presentations and so forth, so [I've put it online][4].
 The tool is written in pure JavaScript and creates SVGs that all modern browsers
 can render. This means the scripts can also be dropped directly into web
 applications that create tree data on the fly, as a reporting/visualization
-tool. The source is freely licensed under GPL and [placed on GitHub][5].
+tool. The source is freely licensed under GPL.
 
 
 Use
@@ -150,13 +150,10 @@ Contact
 -------
 
 I hope some find the tool useful or interesting. [Check out the site][4] and as
-ever, feel free to contact me on the comments or at jimblackler@gmail.com, or
-make requests via the [GitHub page][5].
-
+ever, feel free to contact me at jimblackler@gmail.com.
 
 
 [1]: http://jimblackler.net/treefun/index.html?data=unix
 [2]: http://jimblackler.net/treefun/index.html?data=java
 [3]: http://en.wikipedia.org/wiki/Tree_(data_structure)
 [4]: http://jimblackler.net/treefun/index.html
-[5]: https://github.com/jimblackler/treefun
