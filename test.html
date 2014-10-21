@@ -1,0 +1,150 @@
+<p><a href="http://jimblackler.net/treefun/index.html">This tool</a> creates SVG (Standard Vector Graphics) files to illustrate
+  information structured as a basic tree.</p>
+
+<a href="http://jimblackler.net/treefun/index.html"><img src="wp-content/uploads/2014/10/simple_tree.png" style="float:right" alt="Simple tree image" style="max-width:100%;"></a></p>
+
+<p>Here I define <em>tree</em> as an ordered graph without loops where every node has zero
+  or one 'parent' nodes in the same tree.</p>
+
+<p>It's a <a href="http://en.wikipedia.org/wiki/Tree_(data_structure)">very common structure</a> in computing and will be familiar to most as the
+  structure of folders on a personal computer (as seen in the <a href="http://jimblackler.net/treefun/index.html?data=unix">'Unix'
+    example</a>). It's also the structure of classes in a single-inheritance object
+  oriented programming language (as seen in the <a href="http://jimblackler.net/treefun/index.html?data=java">'Java' example</a>).</p>
+
+<p>However lots of real world data can be formatted this way too. For instance an
+  'org chart' of the hierarchy of an organization (because everyone has a boss,
+  apart from the boss of the company).</p>
+
+<h2>Project</h2>
+
+<p>I wanted to visualize binary search trees to help understand a problem, but I
+  couldn't find a simple tool to take tree data as text and to output it as a line
+  drawing. I also became interested in the problem of arranging arbitrary tree
+  arrangements neatly, in the original breadthwise order, without overlapping and
+  with sensible spacing between elements. So, I decided to make a tree diagram
+  tool myself.</p>
+
+<p>It may be useful as a tool to generate diagrams of tree structures for
+  documents, presentations and so forth, so <a href="http://jimblackler.net/treefun/index.html">I've put it online</a>.</p>
+
+<p><img src="wp-content/uploads/2014/10/wow_tree.png" alt="Example tree showing character classifications in an online game" style="max-width:100%;"></p>
+
+<p>The tool is written in pure JavaScript and creates SVGs that all modern browsers
+  can render. This means the scripts can also be dropped directly into web
+  applications that create tree data on the fly, as a reporting/visualization
+  tool. The source is freely licensed under GPL and <a href="https://github.com/jimblackler/treefun">placed on GitHub</a>.</p>
+
+<h2>Use</h2>
+
+<p>To make your own diagrams all you have to do is visit one of the demo pages and
+  edit the data (specified in classic tabular style, e.g: </p>
+
+<pre><code>My Root
+  My First Child
+  My Grandchild
+  My Second Child
+</code></pre>
+
+<p>This will generate the diagram below:</p>
+
+<p><img src="wp-content/uploads/2014/10/custom_tree.png" alt="Custom tree image" style="max-width:100%;"></a></p>
+
+<p>You can edit the options (provided as editable JSON in an edit box on the page)
+  to customize the image in various ways. For instance setting <code>"flipXY": 1</code>
+  will convert the image to a horizontal diagram.</p>
+
+<p><img src="wp-content/uploads/2014/10/custom_tree_horizontal.png" alt="Custom horizontal tree image" style="max-width:100%;"></a></p>
+
+<p>I won't detail all the options here because it's designed for experimentation;
+  just play with the values and see what you get. You can change the relative
+  size and margins of the nodes, line spacing in the labels, arrow size and
+  direction and more.</p>
+
+<p>To change the colors or line styles of the nodes and arrows, or the label font
+  size and style, simply edit the CSS data on the page. For instance, editing the
+  CSS as follows...</p>
+
+<pre><code>text {
+  text-anchor: middle;
+  font-size: x-small;
+  fill: white;
+  }
+
+  rect {
+  fill: green;
+  stroke: black;
+  stroke-width: 0;
+  }
+</code></pre>
+
+<p>.. would result in this diagram:
+  <img src="wp-content/uploads/2014/10/custom_tree_styled.png" alt="Custom style tree" style="max-width:100%;"></p>
+
+<h2>Method</h2>
+
+<p>The diagram generator has the task of building diagrams that have elements
+  positioned and spaced sensibly, without nodes or lines overlapping, and making
+  the best use of available space (the nominated rectangle the diagram may
+  occupy). Element positions need to be considered as a whole, as repositioning
+  any element will have a knock-on effect on any other elements it might now
+  overlap, free space to better position, and so on.</p>
+
+<p>After experimentation I developed a relatively simple method with all nodes
+  having their vertical position fixed in a <em>level</em> based on the distance to their
+  tree root. The horizontal positions are in order of the breath order of the
+  nodes in the tree, but other than that, they are allowed to move horizontally.
+  The method relies on identifying the one level which has least potential to be
+  repositioned, laying this out with regular spacing and fitting the other levels
+  around it.</p>
+
+<p>Relative values are given in the options for the widths of nodes and the spaces
+  between sibling nodes (nodes that share the same parent) and cousin nodes (nodes
+  that are the same distance from their roots but don't share the same parent).</p>
+
+<ul class="task-list">
+  <li><p>The tree structure is converted into an array of levels.</p></li>
+  <li><p>Each level is measured for its minimum width given the spacing ratios in the
+    options.</p></li>
+  <li><p>The level that occupies the most screen width is nominated as the <em>fixed</em>
+    level.</p></li>
+
+
+<p><img src="wp-content/uploads/2014/10/fixed_row.png" alt="Fixed row" style="max-width:100%;"></p>
+
+<li><p>All levels between the fixed level up to an including the root are now
+  considered in turn. For nodes that have children (in the level below) they are
+  given an ideal horizontal position as the average (horizontally) of their
+  children.</p></li>
+
+<li><p>A 'sweep' process then travels left to right across the nodes and forcing the
+  rightmost node of each considered pair further right to ensure that it is not
+  positioned too closely to its predecessor. As this may push nodes outside the
+  diagram area, a return sweep performs the same operation from right to left
+  with the rightmost element constrained to the available horizontal space.</p></li>
+
+<li><p>These positions won't result in overlapping elements. However because of the
+  way the sweep operates, elements will often result in nodes positioned
+  immediately to the right of neighbours when there is a large gap remaining
+  that could be occupied. In order to have nodes occupy the central position in
+  the available space, a third and fourth sweep are performed in mirror-image of
+  the first two (right to left then left to right). Naturally after sweep four
+  the elements are often positioned immediately to the <em>left</em> of neighbours. So,
+  the positions after sweep two and sweep four are averaged to determine the
+  final position of the nodes; non- overlapping and evenly positioned in the
+  available space.</p></li>
+
+
+<p><img src="wp-content/uploads/2014/10/combined.png" alt="Illustration of the sweep process" style="max-width:100%;"></p>
+
+
+  <li>A similar operation is performed on all the levels below the fixed level
+    travelling downwards. On this occasion, the ideal horizontal position for the
+    nodes is an even distribution of children underneath, with the group centered
+    on their parent node.</li>
+</ul>
+
+<h2>Contact</h2>
+
+<p>I hope some find the tool useful or interesting. <a href="http://jimblackler.net/treefun/index.html">Check out the site</a> and as
+  ever, feel free to contact me on the comments or at <a href="mailto:jimblackler@gmail.com">jimblackler@gmail.com</a>, or
+  make requests via the <a href="https://github.com/jimblackler/treefun">GitHub page</a>.</p>
