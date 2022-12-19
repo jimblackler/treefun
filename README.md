@@ -1,5 +1,11 @@
-A tree diagram (SVG) generation tool in JavaScript
-==================================================
+Use the 2022 version instead!
+=============================
+
+A new version delivered as an NPM package, updated for modern JavaScript (ES6) and featuring Typescript support is now available here: [treefun2](https://github.com/jimblackler/treefun2)
+
+
+Legacy version
+==============
 
 [This tool][4] creates SVG (Standard Vector Graphics) files to illustrate
 information structured as a basic tree.
